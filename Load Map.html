@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <style>
+        body,
+        html,
+        #divMap {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <title>ArcGIS API For Javascript 4.22</title>
+</head>
+
+<!--<link rel="stylesheet" href="https://js.arcgis.com/4.22/esri/themes/light/main.css">
+<script src="https://js.arcgis.com/4.22/"></script>-->
+
+<link rel="stylesheet" href="https://localhost:4431/arcgis_js_api/javascript/4.22/esri/themes/light/main.css">
+<script src="https://localhost:4431/arcgis_js_api/javascript/4.22/init.js"></script>
+
+<body>
+    <div id="divMap"></div>
+</body>
+
+</html>
+
+<script>
+    let map;
+    let layer;
+    let mapView;
+    require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer"],
+        function (config, Map, MapView, FeatureLayer, MapImageLayer) {
+
+            //config.apiKey = "AAPK6dfcfe07760346799cdda2a5dcd53f28o4F5FuXFQkyyoyiWhsiXfG9L8VlQf5AfG1AErUDWJTlFcCxfWJDPKDOCvbsdq3UU";
+
+            layer = new MapImageLayer({
+                url: "https://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer"
+                //url : "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer"
+                //url : "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap/MapServer"
+            });
+
+            map = new Map({
+               //basemap: "osm-light-gray",
+            });
+
+            mapView = new MapView({
+                map: map,
+                //center: [-107.71808390060319, 42.68918060911958],
+                //center: [51.6573571480861, 32.64777704555835],
+                //zoom: 20,
+                container: "divMap"
+            });
+
+            //map.layers.addMany([layer]);
+            map.add(layer);
+
+            mapView.on("click", function(e){
+                alert("x:" + e.mapPoint.x + " y:" + e.mapPoint.y );
+            });
+
+         
+        })
+
+</script>    
