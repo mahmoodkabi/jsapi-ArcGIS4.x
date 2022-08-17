@@ -14,11 +14,11 @@
     <title>ArcGIS API For Javascript 4.24</title>
 </head>
 
-<!--<link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/themes/light/main.css">
-<script src="https://js.arcgis.com/4.24/"></script>-->
+<link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/themes/light/main.css">
+<script src="https://js.arcgis.com/4.24/"></script>
 
-<link rel="stylesheet" href="https://localhost:4431/arcgis_js_api/javascript/4.24/esri/themes/light/main.css">
-<link rel="stylesheet" href="map_v1.css">
+<!-- <link rel="stylesheet" href="https://localhost:4431/arcgis_js_api/javascript/4.24/esri/themes/light/main.css">-->
+<link rel="stylesheet" href="map_v1.css"> 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="https://localhost:4431/arcgis_js_api/javascript/4.24/init.js"></script>
@@ -32,11 +32,13 @@
 
 <script>
     $(document).ready(function () {
-        var url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
+        //var url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
+        //var url = "https://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer";
+        var url = "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap/MapServer";
         loadMap(url, "divMap", function(){
 
             mapClick(function(e){
-                alert(e);
+                //alert(e);
             });
 
             measurementTools();

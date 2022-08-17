@@ -13,9 +13,7 @@ function loadMap(url, divMap, fn){
             publicDivMap = divMap;
             
             layer = new MapImageLayer({
-                //url: "https://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer"
                 url : url
-                //url : "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap/MapServer"
             });
 
             map = new Map({
@@ -51,41 +49,35 @@ function mapClick(fn){
 }
 
 function measurementTools(){
-    let toolbarStr = '<div id="toolbarDiv" class="esri-component esri-widget">'+
-    '<button'+
-      'id="distance"'+
-      'class="esri-widget--button esri-interactive esri-icon-measure-line"'+
-      'title="Distance Measurement Tool"'+
-    '></button>'+
-    '<button'+
-      'id="area"'+
-      'class="esri-widget--button esri-interactive esri-icon-measure-area"'+
-      'title="Area Measurement Tool"'+
-    '></button>'+
-    '<button'+
-      'id="clear"'+
-      'class="esri-widget--button esri-interactive esri-icon-trash"'+
-      'title="Clear Measurements"'+
-    '></button>'+
+    let toolbarStr = '<div id="toolbarDiv" class="esri-component esri-widget"> '+
+    '<button '+
+      'id="distance" '+
+      'class="esri-widget--button esri-interactive esri-icon-measure-line" '+
+      'title="Distance Measurement Tool" '+
+    '></button> '+
+    '<button '+
+      'id="area" '+
+      'class="esri-widget--button esri-interactive esri-icon-measure-area" '+
+      'title="Area Measurement Tool" '+
+    '></button> '+
+    '<button '+
+      'id="clear" '+
+      'class="esri-widget--button esri-interactive esri-icon-trash" '+
+      'title="Clear Measurements" '+
+    '></button> '+
   '</div>';
 
-  document.getElementsByTagName('body').innerHTML += toolbarStr;
+    $(toolbarStr).appendTo('body');
     
     let activeView = mapView;
 
-    const distanceButton = document.getElementById("distance");
-    const areaButton = document.getElementById("area");
-    const clearButton = document.getElementById("clear");
+    const distanceButton = $("#distance");
+    const areaButton = $("#area");
+    const clearButton = $("#clear");
 
-    distanceButton.addEventListener("click", () => {
-        distanceMeasurement();
-    });
-    areaButton.addEventListener("click", () => {
-        areaMeasurement();
-    });
-    clearButton.addEventListener("click", () => {
-        clearMeasurements();
-    });
+    distanceButton.click(distanceMeasurement);
+    areaButton.click(areaMeasurement);
+    clearButton.click(clearMeasurements);
 
     activeView.set({
         container: publicDivMap
@@ -100,21 +92,21 @@ function measurementTools(){
         const type = activeView.type;
         measurement.activeTool =
             type.toUpperCase() === "2D" ? "distance" : "direct-line";
-        distanceButton.classList.add("active");
-        areaButton.classList.remove("active");
+        //distanceButton.classList.add("active");
+        //areaButton.classList.remove("active");
     }
   
     // Call the appropriate AreaMeasurement2D or AreaMeasurement3D
     function areaMeasurement() {
         measurement.activeTool = "area";
-        distanceButton.classList.remove("active");
-        areaButton.classList.add("active");
+        //distanceButton.classList.remove("active");
+        //areaButton.classList.add("active");
     }
 
     // Clears all measurements
     function clearMeasurements() {
-        distanceButton.classList.remove("active");
-        areaButton.classList.remove("active");
+        //distanceButton.classList.remove("active");
+        //areaButton.classList.remove("active");
         measurement.clear();
     }
 }
