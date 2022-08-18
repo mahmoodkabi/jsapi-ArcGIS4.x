@@ -32,16 +32,19 @@
 
 <script>
     $(document).ready(function () {
-        //var url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
-        //var url = "https://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer";
-        var url = "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap/MapServer";
-        loadMap(url, "divMap", function(){
+        //var url = "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap/MapServer";
+        var url = "http://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer";
+        var urlSearch = "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap1/MapServer";
+
+        loadMap(url, "divMap", urlSearch, function(){
 
             mapClick(function(e){
                 //alert(e);
             });
 
             measurementTools();
+
+            identifyTools();
         });
     });
        

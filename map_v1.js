@@ -3,14 +3,19 @@ let layer;
 let mapView;
 let measurement;
 let publicDivMap
+let identifyLayer;
+let paramsIden;
+let publicIdentify;
+let publicUrlSearch
 
 
-function loadMap(url, divMap, fn){
+function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
-            "esri/widgets/Measurement"],
-        function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement) {
+            "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters"],
+        function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters) {
 
             publicDivMap = divMap;
+            publicUrlSearch = urlSearch;
             
             layer = new MapImageLayer({
                 url : url
@@ -31,7 +36,33 @@ function loadMap(url, divMap, fn){
             //map.layers.addMany([layer]);
             map.add(layer);
 
+
+            //----------------------------------------اندازه گیری-----------------------------------
             measurement = new Measurement();
+
+            //------------------------------------------شناسایی----------------------------------
+
+            publicIdentify = identify;
+
+            // Add the map service as a MapImageLayer
+            // use identify to query the service to add interactivity to the app
+            identifyLayer = new MapImageLayer({
+                url: urlSearch,
+                opacity: 0.5
+            });
+
+            mapView.when(function () {
+        
+                // Set the parameters for the identify
+                paramsIden = new IdentifyParameters();
+                paramsIden.tolerance = 3;
+                paramsIden.layerIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+                paramsIden.layerOption = "top";
+                paramsIden.width = mapView.width;
+                paramsIden.height = mapView.height;
+            });
+
+            //--------------------------------------------------------------------------------------
 
         
 
@@ -108,5 +139,93 @@ function measurementTools(){
         //distanceButton.classList.remove("active");
         //areaButton.classList.remove("active");
         measurement.clear();
+    }
+}
+
+function identifyTools(){
+    // executeIdentify() is called each time the mapView is clicked
+    mapView.on("click", executeIdentify);
+}
+
+ // Executes each time the mapView is clicked
+ function executeIdentify(event) {
+    // Set the geometry to the location of the mapView click
+    paramsIden.geometry = event.mapPoint;
+    paramsIden.mapExtent = mapView.extent;
+    document.getElementById(publicDivMap).style.cursor = "wait";
+
+    // This function returns a promise that resolves to an array of features
+    // A custom popupTemplate is set for each feature based on the layer it
+    // originates from
+    publicIdentify
+      .identify(publicUrlSearch, paramsIden)
+      .then(function (response) {
+        var results = response.results;
+
+        return results.map(function (result) {
+          var feature = result.feature;
+          var layerName = result.layerName;
+
+          feature.attributes.layerName = layerName;
+          if (layerName === "Roads") {
+            feature.popupTemplate = {
+              // autocasts as new PopupTemplate()
+              title: layerName,
+              content:
+                "<b>Block ID:</b> {BLOCK_ID} " +
+                "<br><b>Geometry Type:</b> {Shape}" +
+                "<br><b>Road Length:</b> {Shape_Length}"
+            };
+          } else if (layerName === "water") {
+            feature.popupTemplate = {
+              // autocasts as new PopupTemplate()
+              title: "{LABEL_LOCAL}",
+              content:
+                "<b>Block ID:</b> {BLOCK_ID} " +
+                "<br><b>Geometry Type:</b> {Shape}" +
+                "<br><b>Water Area:</b> {Shape_Area}"
+            };
+          } else if (layerName === "Urban") {
+            feature.popupTemplate = {
+              // autocasts as new PopupTemplate()
+              title: layerName,
+              content:
+                "<b>Block ID:</b> {BLOCK_ID} " +
+                "<br><b>Geometry Type:</b> {Shape}" +
+                "<br><b>Urban Area:</b> {Shape_Area}"
+            };
+          } else if (layerName === "Landuse") {
+            feature.popupTemplate = {
+              // autocasts as new PopupTemplate()
+              title: layerName,
+              content:
+                "<b>Block ID:</b> {BLOCK_ID} " +
+                "<br><b>Geometry Type:</b> {Shape}" +
+                "<br><b>Landuse Area:</b> {Shape_Area}"
+            };
+          } else if (layerName === "Counties") {
+            feature.popupTemplate = {
+              // autocasts as new PopupTemplate()
+              title: layerName,
+              content:
+                "<b>ObjectID:</b> {OBJECTID} " +
+                "<br><b>Geometry Type:</b> {Shape}" +
+                "<br><b>Landuse Area:</b> {Shape_Area}"
+            };
+          }
+          return feature;
+        });
+      })
+      .then(showPopup); // Send the array of features to showPopup()
+
+    // Shows the results of the identify in a popup once the promise is resolved
+    function showPopup(response) {
+      if (response.length > 0) {
+        mapView.popup.open({
+          features: response,
+          location: event.mapPoint
+        });
+      }
+      document.getElementById(publicDivMap).style.cursor = "auto";
     }
 }
