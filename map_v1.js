@@ -3,10 +3,11 @@ let layer;
 let mapView;
 let measurement;
 let publicDivMap
-let identifyLayer;
+//let identifyLayer;
 let paramsIden;
 let publicIdentify;
-let publicUrlSearch
+let publicUrlSearch;
+let publicFn;
 
 
 function loadMap(url, divMap, urlSearch, fn){
@@ -46,18 +47,18 @@ function loadMap(url, divMap, urlSearch, fn){
 
             // Add the map service as a MapImageLayer
             // use identify to query the service to add interactivity to the app
-            identifyLayer = new MapImageLayer({
+            /* identifyLayer = new MapImageLayer({
                 url: urlSearch,
                 opacity: 0.5
-            });
+            }); */
 
             mapView.when(function () {
         
                 // Set the parameters for the identify
                 paramsIden = new IdentifyParameters();
-                paramsIden.tolerance = 3;
-                paramsIden.layerIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-                paramsIden.layerOption = "top";
+                paramsIden.tolerance = 5;
+                paramsIden.layerIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+                paramsIden.layerOption = "all";
                 paramsIden.width = mapView.width;
                 paramsIden.height = mapView.height;
             });
@@ -142,7 +143,9 @@ function measurementTools(){
     }
 }
 
-function identifyTools(){
+function getInfoClick(fn){
+    publicFn = fn;
+
     // executeIdentify() is called each time the mapView is clicked
     mapView.on("click", executeIdentify);
 }
@@ -152,7 +155,6 @@ function identifyTools(){
     // Set the geometry to the location of the mapView click
     paramsIden.geometry = event.mapPoint;
     paramsIden.mapExtent = mapView.extent;
-    document.getElementById(publicDivMap).style.cursor = "wait";
 
     // This function returns a promise that resolves to an array of features
     // A custom popupTemplate is set for each feature based on the layer it
@@ -162,70 +164,13 @@ function identifyTools(){
       .then(function (response) {
         var results = response.results;
 
-        return results.map(function (result) {
+        results.map(function (result) {
           var feature = result.feature;
-          var layerName = result.layerName;
+         // var layerName = result.layerName;
 
-          feature.attributes.layerName = layerName;
-          if (layerName === "Roads") {
-            feature.popupTemplate = {
-              // autocasts as new PopupTemplate()
-              title: layerName,
-              content:
-                "<b>Block ID:</b> {BLOCK_ID} " +
-                "<br><b>Geometry Type:</b> {Shape}" +
-                "<br><b>Road Length:</b> {Shape_Length}"
-            };
-          } else if (layerName === "water") {
-            feature.popupTemplate = {
-              // autocasts as new PopupTemplate()
-              title: "{LABEL_LOCAL}",
-              content:
-                "<b>Block ID:</b> {BLOCK_ID} " +
-                "<br><b>Geometry Type:</b> {Shape}" +
-                "<br><b>Water Area:</b> {Shape_Area}"
-            };
-          } else if (layerName === "Urban") {
-            feature.popupTemplate = {
-              // autocasts as new PopupTemplate()
-              title: layerName,
-              content:
-                "<b>Block ID:</b> {BLOCK_ID} " +
-                "<br><b>Geometry Type:</b> {Shape}" +
-                "<br><b>Urban Area:</b> {Shape_Area}"
-            };
-          } else if (layerName === "Landuse") {
-            feature.popupTemplate = {
-              // autocasts as new PopupTemplate()
-              title: layerName,
-              content:
-                "<b>Block ID:</b> {BLOCK_ID} " +
-                "<br><b>Geometry Type:</b> {Shape}" +
-                "<br><b>Landuse Area:</b> {Shape_Area}"
-            };
-          } else if (layerName === "Counties") {
-            feature.popupTemplate = {
-              // autocasts as new PopupTemplate()
-              title: layerName,
-              content:
-                "<b>ObjectID:</b> {OBJECTID} " +
-                "<br><b>Geometry Type:</b> {Shape}" +
-                "<br><b>Landuse Area:</b> {Shape_Area}"
-            };
-          }
-          return feature;
+          //feature.attributes.layerName = layerName;
         });
-      })
-      .then(showPopup); // Send the array of features to showPopup()
 
-    // Shows the results of the identify in a popup once the promise is resolved
-    function showPopup(response) {
-      if (response.length > 0) {
-        mapView.popup.open({
-          features: response,
-          location: event.mapPoint
-        });
-      }
-      document.getElementById(publicDivMap).style.cursor = "auto";
-    }
+        publicFn(results);
+      });
 }

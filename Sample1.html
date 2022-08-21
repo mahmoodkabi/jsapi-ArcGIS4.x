@@ -44,7 +44,11 @@
 
             measurementTools();
 
-            identifyTools();
+            getInfoClick(function(e){
+                e.forEach(element => {
+                    alert(element.layerName);
+                });
+            });
         });
     });
        
