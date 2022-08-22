@@ -10,18 +10,22 @@ let publicUrlSearch;
 let publicFn;
 let publicPoint;
 let publicGraphic;
+let publicSpatialReference;
+let wkid = 32639;
 
 
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
-            "esri/Graphic"],
-        function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic) {
+            "esri/Graphic", "esri/geometry/SpatialReference"],
+        function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic,
+                  SpatialReference) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
             publicPoint = Point;
             publicGraphic = Graphic;
+            publicSpatialReference = SpatialReference;
             
             layer = new MapImageLayer({
                 url : url
@@ -189,14 +193,23 @@ function goToXY(x, y){
 
     var gotopt = new publicPoint({
         longitude: x,
-        latitude: y
+        latitude: y,
+        spatialReference: {
+            wkid: wkid
+        },
     });
 
     mapView.goTo(gotopt);
+
     var gotographic = new publicGraphic({
         geometry: gotopt,
         symbol: markerSymbol,
     });
 
     mapView.graphics.add(gotographic);
+}
+
+
+function clearMap() {
+	mapView.graphics.removeAll();
 }
