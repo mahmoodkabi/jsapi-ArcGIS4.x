@@ -8,15 +8,20 @@ let paramsIden;
 let publicIdentify;
 let publicUrlSearch;
 let publicFn;
+let publicPoint;
+let publicGraphic;
 
 
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
-            "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters"],
-        function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters) {
+            "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
+            "esri/Graphic"],
+        function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
+            publicPoint = Point;
+            publicGraphic = Graphic;
             
             layer = new MapImageLayer({
                 url : url
@@ -64,6 +69,7 @@ function loadMap(url, divMap, urlSearch, fn){
             });
 
             //--------------------------------------------------------------------------------------
+            
 
         
 
@@ -166,11 +172,31 @@ function getInfoClick(fn){
 
         results.map(function (result) {
           var feature = result.feature;
-         // var layerName = result.layerName;
-
-          //feature.attributes.layerName = layerName;
         });
 
         publicFn(results);
       });
+}
+
+
+function goToXY(x, y){
+    let markerSymbol = {
+        type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
+        url: "https://gisfava.isfahan.ir/SuportSite/Content/Image/addPlace.png",
+        width: "32px",
+        height: "32px"
+      };
+
+    var gotopt = new publicPoint({
+        longitude: x,
+        latitude: y
+    });
+
+    mapView.goTo(gotopt);
+    var gotographic = new publicGraphic({
+        geometry: gotopt,
+        symbol: markerSymbol,
+    });
+
+    mapView.graphics.add(gotographic);
 }
