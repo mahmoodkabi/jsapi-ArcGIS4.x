@@ -13,14 +13,18 @@ let publicGraphic;
 let publicSpatialReference;
 let wkid = 32639;
 let publicOpenStreetMapLayer;
-
+let defaultX = 51.65;
+let defaultY = 32.64;
+let defaultZoom = 12;
+let publicEsriConfig;
+let apiKey = "AAPK6dfcfe07760346799cdda2a5dcd53f28o4F5FuXFQkyyoyiWhsiXfG9L8VlQf5AfG1AErUDWJTlFcCxfWJDPKDOCvbsdq3UU"
 
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
-            "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer"],
+            "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer", "esri/config"],
         function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic,
-                  SpatialReference, OpenStreetMapLayer) {
+                  SpatialReference, OpenStreetMapLayer, esriConfig) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
@@ -28,39 +32,33 @@ function loadMap(url, divMap, urlSearch, fn){
             publicGraphic = Graphic;
             publicSpatialReference = SpatialReference;
             publicOpenStreetMapLayer = OpenStreetMapLayer;
+            publicEsriConfig = esriConfig;
+            publicIdentify = identify;
+
+            esriConfig.apiKey = apiKey;
             
             layer = new MapImageLayer({
                 url : url
             });
 
             map = new Map({
-              //basemap: "osm-light-gray",
+              //basemap: "osm",
             });
+
 
             mapView = new MapView({
                 map: map,
-                //center: [-107.71808390060319, 42.68918060911958],
-                //center: [51.6573571480861, 32.64777704555835],
-                //zoom: 20,
+                center: [defaultX, defaultY],
+                zoom: defaultZoom,
                 container: divMap
             });
 
-            map.layers.addMany([layer]);
             map.add(layer);
 
             //----------------------------------------اندازه گیری-----------------------------------
             measurement = new Measurement();
 
             //------------------------------------------شناسایی----------------------------------
-
-            publicIdentify = identify;
-
-            // Add the map service as a MapImageLayer
-            // use identify to query the service to add interactivity to the app
-            /* identifyLayer = new MapImageLayer({
-                url: urlSearch,
-                opacity: 0.5
-            }); */
 
             mapView.when(function () {
         
@@ -74,9 +72,6 @@ function loadMap(url, divMap, urlSearch, fn){
             });
 
             //--------------------------------------------------------------------------------------
-            
-
-        
 
             fn();
     })
@@ -214,9 +209,14 @@ function clearMap() {
 	mapView.graphics.removeAll();
 }
 
-function changeMap(){
-    map.removeAll();
-    const osmLayer = new publicOpenStreetMapLayer();
-    map.add(osmLayer);
-    map.allLayers.items[0].spatialReference.wkid = wkid;
+function changeBaseMap(nameBaseMap){
+    publicEsriConfig.apiKey = apiKey;
+    map.basemap = nameBaseMap;
+    //map.basemap = "osm"
+    //map.basemap = "osm-standard",
+
+    //map.removeAll();
+    //const osmLayer = new publicOpenStreetMapLayer();
+    //map.add(osmLayer);
+    //map.allLayers.items[0].spatialReference.wkid = wkid;
 }
