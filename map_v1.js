@@ -12,27 +12,29 @@ let publicPoint;
 let publicGraphic;
 let publicSpatialReference;
 let wkid = 32639;
+let publicOpenStreetMapLayer;
 
 
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
-            "esri/Graphic", "esri/geometry/SpatialReference"],
+            "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer"],
         function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic,
-                  SpatialReference) {
+                  SpatialReference, OpenStreetMapLayer) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
             publicPoint = Point;
             publicGraphic = Graphic;
             publicSpatialReference = SpatialReference;
+            publicOpenStreetMapLayer = OpenStreetMapLayer;
             
             layer = new MapImageLayer({
                 url : url
             });
 
             map = new Map({
-            //basemap: "osm-light-gray",
+              //basemap: "osm-light-gray",
             });
 
             mapView = new MapView({
@@ -43,9 +45,8 @@ function loadMap(url, divMap, urlSearch, fn){
                 container: divMap
             });
 
-            //map.layers.addMany([layer]);
+            map.layers.addMany([layer]);
             map.add(layer);
-
 
             //----------------------------------------اندازه گیری-----------------------------------
             measurement = new Measurement();
@@ -182,8 +183,8 @@ function getInfoClick(fn){
       });
 }
 
-
 function goToXY(x, y){
+
     let markerSymbol = {
         type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
         url: "https://gisfava.isfahan.ir/SuportSite/Content/Image/addPlace.png",
@@ -209,7 +210,13 @@ function goToXY(x, y){
     mapView.graphics.add(gotographic);
 }
 
-
 function clearMap() {
 	mapView.graphics.removeAll();
+}
+
+function changeMap(){
+    map.removeAll();
+    const osmLayer = new publicOpenStreetMapLayer();
+    map.add(osmLayer);
+    map.allLayers.items[0].spatialReference.wkid = wkid;
 }
