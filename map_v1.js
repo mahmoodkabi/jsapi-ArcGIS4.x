@@ -18,13 +18,16 @@ let defaultY = 32.64;
 let defaultZoom = 12;
 let publicEsriConfig; 
 let apiKey = "AAPK6dfcfe07760346799cdda2a5dcd53f28o4F5FuXFQkyyoyiWhsiXfG9L8VlQf5AfG1AErUDWJTlFcCxfWJDPKDOCvbsdq3UU";
+let publicLocate;
+
 
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
-            "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer", "esri/config"],
+            "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer", "esri/config",
+            "esri/widgets/Locate"],
         function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic,
-                  SpatialReference, OpenStreetMapLayer, esriConfig) {
+                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
@@ -34,6 +37,7 @@ function loadMap(url, divMap, urlSearch, fn){
             publicOpenStreetMapLayer = OpenStreetMapLayer;
             publicEsriConfig = esriConfig;
             publicIdentify = identify;
+            publicLocate = Locate;
 
 	    
             esriConfig.apiKey = apiKey;
@@ -88,6 +92,7 @@ function loadMap(url, divMap, urlSearch, fn){
             });
 
             //--------------------------------------------------------------------------------------
+
 
             fn();
     })
@@ -235,4 +240,15 @@ function changeBaseMap(nameBaseMap){
     //const osmLayer = new publicOpenStreetMapLayer();
     //map.add(osmLayer);
     //map.allLayers.items[0].spatialReference.wkid = wkid;
+}
+
+function geoLocation(){
+    const locateBtn = new publicLocate({
+        view: mapView
+    });
+
+    // Add the locate widget to the top left corner of the view
+    mapView.ui.add(locateBtn, {
+        position: "top-left"
+    });
 }
