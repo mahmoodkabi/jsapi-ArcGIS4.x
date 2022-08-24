@@ -16,7 +16,7 @@ let publicOpenStreetMapLayer;
 let defaultX = 51.65;
 let defaultY = 32.64;
 let defaultZoom = 12;
-let publicEsriConfig;
+let publicEsriConfig; 
 let apiKey = "AAPK6dfcfe07760346799cdda2a5dcd53f28o4F5FuXFQkyyoyiWhsiXfG9L8VlQf5AfG1AErUDWJTlFcCxfWJDPKDOCvbsdq3UU"
 
 function loadMap(url, divMap, urlSearch, fn){
@@ -35,6 +35,7 @@ function loadMap(url, divMap, urlSearch, fn){
             publicEsriConfig = esriConfig;
             publicIdentify = identify;
 
+	    
             esriConfig.apiKey = apiKey;
             
             layer = new MapImageLayer({
