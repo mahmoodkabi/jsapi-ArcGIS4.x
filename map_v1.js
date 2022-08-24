@@ -17,7 +17,7 @@ let defaultX = 51.65;
 let defaultY = 32.64;
 let defaultZoom = 12;
 let publicEsriConfig; 
-let apiKey = "AAPK6dfcfe07760346799cdda2a5dcd53f28o4F5FuXFQkyyoyiWhsiXfG9L8VlQf5AfG1AErUDWJTlFcCxfWJDPKDOCvbsdq3UU"
+let apiKey = "AAPK6dfcfe07760346799cdda2a5dcd53f28o4F5FuXFQkyyoyiWhsiXfG9L8VlQf5AfG1AErUDWJTlFcCxfWJDPKDOCvbsdq3UU";
 
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
@@ -37,14 +37,29 @@ function loadMap(url, divMap, urlSearch, fn){
 
 	    
             esriConfig.apiKey = apiKey;
-            
-            layer = new MapImageLayer({
-                url : url
-            });
+
+            var urls = url.split(",");
 
             map = new Map({
-              //basemap: "osm",
             });
+
+            if(url.toUpperCase().includes("OSM"))
+                map.basemap = "osm";
+            
+
+            if (url.trim() != "") {
+                urls.forEach(function (entry) {
+                    if(entry.toUpperCase().includes("MAPSERVER")){
+                        layerbaseMapID = entry.toUpperCase().split('/');
+                        layer = new MapImageLayer({
+                            url : entry,
+                            id: layerbaseMapID[layerbaseMapID.indexOf("MAPSERVER") - 1]
+                        });
+
+                        map.add(layer);
+                    }
+                });
+            }
 
 
             mapView = new MapView({
@@ -54,7 +69,7 @@ function loadMap(url, divMap, urlSearch, fn){
                 container: divMap
             });
 
-            map.add(layer);
+            
 
             //----------------------------------------اندازه گیری-----------------------------------
             measurement = new Measurement();
@@ -211,7 +226,7 @@ function clearMap() {
 }
 
 function changeBaseMap(nameBaseMap){
-    publicEsriConfig.apiKey = apiKey;
+    //publicEsriConfig.apiKey = apiKey;
     map.basemap = nameBaseMap;
     //map.basemap = "osm"
     //map.basemap = "osm-standard",
