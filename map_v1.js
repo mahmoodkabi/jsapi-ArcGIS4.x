@@ -19,15 +19,17 @@ let defaultZoom = 12;
 let publicEsriConfig; 
 let apiKey = "AAPK6dfcfe07760346799cdda2a5dcd53f28o4F5FuXFQkyyoyiWhsiXfG9L8VlQf5AfG1AErUDWJTlFcCxfWJDPKDOCvbsdq3UU";
 let publicLocate;
+let find;
+let publicFindParameters;
 
 
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
             "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer", "esri/config",
-            "esri/widgets/Locate"],
+            "esri/widgets/Locate", "esri/rest/find", "esri/rest/support/FindParameters"],
         function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic,
-                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate) {
+                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate, find, FindParameters) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
@@ -38,6 +40,8 @@ function loadMap(url, divMap, urlSearch, fn){
             publicEsriConfig = esriConfig;
             publicIdentify = identify;
             publicLocate = Locate;
+            publicFind = find;
+            publicFindParameters = FindParameters;
 
 	    
             esriConfig.apiKey = apiKey;
@@ -251,4 +255,48 @@ function geoLocation(){
     mapView.ui.add(locateBtn, {
         position: "top-left"
     });
+}
+
+
+function showOnMap(url, layerID, field, value, isClearMap, typeShow, fn) {
+	// publicUrl = url;
+	// publicField = field;
+	// publicValue = value;
+	// publicLayerID = layerID;
+	// publicIsClearMap = isClearMap;
+	// publicTypeShow = typeShow;
+	// publicFn = fn;
+	// dojo.ready(showOnMap1);
+
+
+
+    // Create a URL pointing to a map service
+    var findUrl = url;
+
+    // Set parameters to only query the Counties layer by name
+    var params = new publicFindParameters({
+        layerIds: [layerID],
+        searchFields: [field]
+    });
+
+    doFind();
+
+    // Executes on each button click
+    function doFind() {
+        // Set the search text to the value of the input box
+        params.searchText = value;
+        // The find() performs a LIKE SQL query based on the provided text value
+        // showResults() is called once the promise returned here resolves
+        publicFind.find(findUrl, params).then(showResults).catch(rejectedPromise);
+    }
+
+    // Executes when the promise from find.execute() resolves
+    function showResults(response) {
+        fn(response.results);
+    }
+
+    // Executes each time the promise from find.execute() is rejected.
+    function rejectedPromise(error) {
+        fn(error);
+    }
 }
