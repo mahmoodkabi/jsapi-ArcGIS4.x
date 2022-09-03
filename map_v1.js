@@ -21,15 +21,19 @@ let apiKey = "AAPK6dfcfe07760346799cdda2a5dcd53f28o4F5FuXFQkyyoyiWhsiXfG9L8VlQf5
 let publicLocate;
 let find;
 let publicFindParameters;
+let publicParams;
+let publicquery;
+let publicGraphicsLayer;
 
 
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
             "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer", "esri/config",
-            "esri/widgets/Locate", "esri/rest/find", "esri/rest/support/FindParameters"],
+            "esri/widgets/Locate", "esri/rest/find", "esri/rest/support/FindParameters", "esri/rest/query", "esri/rest/support/Query",
+            "esri/layers/GraphicsLayer"],
         function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic,
-                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate, find, FindParameters) {
+                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate, find, FindParameters, query, Query, GraphicsLayer) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
@@ -42,6 +46,12 @@ function loadMap(url, divMap, urlSearch, fn){
             publicLocate = Locate;
             publicFind = find;
             publicFindParameters = FindParameters;
+            publicParams = new Query({
+                returnGeometry: true,
+                outFields: ["*"]
+            });
+            publicquery = query;
+            publicGraphicsLayer = GraphicsLayer;
 
 	    
             esriConfig.apiKey = apiKey;
@@ -259,36 +269,17 @@ function geoLocation(){
 
 
 function showOnMap(url, layerID, field, value, isClearMap, typeShow, fn) {
-	// publicUrl = url;
-	// publicField = field;
-	// publicValue = value;
-	// publicLayerID = layerID;
-	// publicIsClearMap = isClearMap;
-	// publicTypeShow = typeShow;
-	// publicFn = fn;
-	// dojo.ready(showOnMap1);
-
-
-
-    // Create a URL pointing to a map service
-    var findUrl = url;
 
     // Set parameters to only query the Counties layer by name
     var params = new publicFindParameters({
         layerIds: [layerID],
-        searchFields: [field]
+        searchFields: [field],
+        searchText : value,
     });
 
-    doFind();
+    publicFind.find(url, params).then(showResults).catch(rejectedPromise);
 
-    // Executes on each button click
-    function doFind() {
-        // Set the search text to the value of the input box
-        params.searchText = value;
-        // The find() performs a LIKE SQL query based on the provided text value
-        // showResults() is called once the promise returned here resolves
-        publicFind.find(findUrl, params).then(showResults).catch(rejectedPromise);
-    }
+
 
     // Executes when the promise from find.execute() resolves
     function showResults(response) {
@@ -300,3 +291,76 @@ function showOnMap(url, layerID, field, value, isClearMap, typeShow, fn) {
         fn(error);
     }
 }
+
+
+function abc(url, layerID, field, value, isClearMap, typeShow, fn){
+    
+
+    publicParams.where =
+    field + " like N'%"+ value +"%'";
+
+    // executes the query and calls getResults() once the promise is resolved
+    // promiseRejected() is called if the promise is rejected
+    publicquery
+    .executeQueryJSON(url + "/" + layerID, publicParams)
+    .then(getResults)
+    .catch(promiseRejected);
+}
+
+ // Called each time the promise is resolved
+ function getResults(response) {
+    const resultsLayer = new publicGraphicsLayer();
+
+    // Loop through each of the results and assign a symbol and PopupTemplate
+    // to each so they may be visualized on the map
+    const peakResults = response.features.map(function (feature) {
+      // Sets the symbol of each resulting feature to a cone with a
+      // fixed color and width. The height is based on the mountain's elevation
+      feature.symbol = {
+        type: "point-3d", // autocasts as new PointSymbol3D()
+        symbolLayers: [
+          {
+            type: "object", // autocasts as new ObjectSymbol3DLayer()
+            material: {
+              color: "green"
+            },
+            resource: {
+              primitive: "cone"
+            },
+            width: 100000,
+            height: feature.attributes.ELEV_m * 100
+          }
+        ]
+      };
+
+      //feature.popupTemplate = popupTemplate;
+      return feature;
+    });
+
+    resultsLayer.addMany(peakResults);
+
+    // animate to the results after they are added to the map
+    mapView
+      .goTo(peakResults)
+      .then(function () {
+        mapView.popup.open({
+          features: peakResults,
+          featureMenuOpen: true,
+          updateLocationEnabled: true
+        });
+      })
+      .catch(function (error) {
+        if (error.name != "AbortError") {
+          console.error(error);
+        }
+      });
+
+    // print the number of results returned to the user
+    //document.getElementById("printResults").innerHTML =
+      //peakResults.length + " results found!";
+  }
+
+  // Called each time the promise is rejected
+  function promiseRejected(error) {
+    console.error("Promise rejected: ", error.message);
+  }

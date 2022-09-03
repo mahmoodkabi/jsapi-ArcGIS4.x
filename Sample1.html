@@ -60,7 +60,15 @@
             geoLocation();
 
             var urlShowOnMap = "http://gisfava.isfahan.ir/arcgis80/rest/services/BUS/Bus_AVL/MapServer";
-            showOnMap(urlShowOnMap, 0, "OBJECTID", 1,  null, null, function(e){
+            //showOnMap(urlShowOnMap, 0, "OBJECTID", "1",  null, null, function(e){
+            //    var ss = e;
+            //})
+
+            // abc(urlShowOnMap, 0, "OBJECTID", "1",  null, null, function(e){
+            //     var ss = e;
+            // })
+
+            abc(urlShowOnMap, 0, "name", "شهدا",  null, null, function(e){
                 var ss = e;
             })
         });
