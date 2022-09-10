@@ -54,7 +54,7 @@
             });
 
             //تغییر نقشه پایه
-            changeBaseMap("osm");
+            //changeBaseMap("osm");
 
             //موقعیت جاری
             geoLocation();
@@ -68,7 +68,11 @@
             //     var ss = e;
             // })
 
-            abc(urlShowOnMap, 0, "name", "شهدا",  null, null, function(e){
+            //abc(urlShowOnMap, 0, "name", "شهدا",  null, null, function(e){
+            //    var ss = e;
+            //})
+
+            abc(urlShowOnMap, 0, "name like N'%انقلاب%'",  null, null, function(e){
                 var ss = e;
             })
         });

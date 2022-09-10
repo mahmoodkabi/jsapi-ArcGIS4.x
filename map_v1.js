@@ -293,11 +293,11 @@ function showOnMap(url, layerID, field, value, isClearMap, typeShow, fn) {
 }
 
 
-function abc(url, layerID, field, value, isClearMap, typeShow, fn){
+function abc(url, layerID, condition, isClearMap, typeShow, fn){
     
 
-    publicParams.where =
-    field + " like N'%"+ value +"%'";
+    //publicParams.where = field + " like N'%"+ value +"%'";
+    publicParams.where = condition;
 
     // executes the query and calls getResults() once the promise is resolved
     // promiseRejected() is called if the promise is rejected
@@ -309,29 +309,76 @@ function abc(url, layerID, field, value, isClearMap, typeShow, fn){
 
  // Called each time the promise is resolved
  function getResults(response) {
+    //   // Create a symbol for drawing the point
+    //   const textSymbol = {
+    //     type: "text", // autocasts as new TextSymbol()
+    //     color: "#7A003C",
+    //     text: "\ue61d", // esri-icon-map-pin
+    //     font: {
+    //       // autocasts as new Font()
+    //       size: 36,
+    //       family: "CalciteWebCoreIcons"
+    //     }
+    // };
+
+    let textSymbol = {
+      type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+      style: "square",
+      color: "blue",
+      size: "8px",  // pixels
+      outline: {  // autocasts as new SimpleLineSymbol()
+        color: [ 255, 255, 0 ],
+        width: 3  // points
+      }
+    };
+
     const resultsLayer = new publicGraphicsLayer();
 
     // Loop through each of the results and assign a symbol and PopupTemplate
     // to each so they may be visualized on the map
     const peakResults = response.features.map(function (feature) {
-      // Sets the symbol of each resulting feature to a cone with a
-      // fixed color and width. The height is based on the mountain's elevation
-      feature.symbol = {
-        type: "point-3d", // autocasts as new PointSymbol3D()
-        symbolLayers: [
-          {
-            type: "object", // autocasts as new ObjectSymbol3DLayer()
-            material: {
-              color: "green"
-            },
-            resource: {
-              primitive: "cone"
-            },
-            width: 100000,
-            height: feature.attributes.ELEV_m * 100
-          }
-        ]
-      };
+
+      // // Sets the symbol of each resulting feature to a cone with a
+      // // fixed color and width. The height is based on the mountain's elevation
+      // feature.symbol = {
+      //   type: "point", // autocasts as new PointSymbol3D()
+      //   symbolLayers: [
+      //     {
+      //       type: "object", // autocasts as new ObjectSymbol3DLayer()
+      //       material: {
+      //         color: "green"
+      //       },
+      //       resource: {
+      //         primitive: "cone"
+      //       },
+      //       width: 100000,
+      //       height: feature.attributes.ELEV_m * 100
+      //     }
+      //   ]
+      // };
+
+      if(feature.geometry.type == "point"){
+        var p = new publicPoint({
+          longitude: feature.geometry.x,
+          latitude: feature.geometry.y,
+            spatialReference: {
+              wkid: wkid
+          },
+        });
+  
+        // Create a graphic and add the geometry and symbol to it
+        var pointGraphic1 = new publicGraphic({
+          geometry: p,
+          symbol: textSymbol
+        });
+  
+        // Add the graphics to the view's graphics layer
+        mapView.graphics.addMany([
+          pointGraphic1
+        ]);
+        
+      }
+      
 
       //feature.popupTemplate = popupTemplate;
       return feature;
@@ -343,11 +390,11 @@ function abc(url, layerID, field, value, isClearMap, typeShow, fn){
     mapView
       .goTo(peakResults)
       .then(function () {
-        mapView.popup.open({
-          features: peakResults,
-          featureMenuOpen: true,
-          updateLocationEnabled: true
-        });
+        // mapView.popup.open({
+        //   features: peakResults,
+        //   featureMenuOpen: true,
+        //   updateLocationEnabled: true
+        // });
       })
       .catch(function (error) {
         if (error.name != "AbortError") {
