@@ -268,32 +268,8 @@ function geoLocation(){
 }
 
 
-function showOnMap(url, layerID, field, value, isClearMap, typeShow, fn) {
 
-    // Set parameters to only query the Counties layer by name
-    var params = new publicFindParameters({
-        layerIds: [layerID],
-        searchFields: [field],
-        searchText : value,
-    });
-
-    publicFind.find(url, params).then(showResults).catch(rejectedPromise);
-
-
-
-    // Executes when the promise from find.execute() resolves
-    function showResults(response) {
-        fn(response.results);
-    }
-
-    // Executes each time the promise from find.execute() is rejected.
-    function rejectedPromise(error) {
-        fn(error);
-    }
-}
-
-
-function abc(url, layerID, condition, isClearMap, typeShow, fn){
+function showOnMap(url, layerID, condition, isClearMap, fn){
     
 
     //publicParams.where = field + " like N'%"+ value +"%'";
@@ -377,9 +353,69 @@ function abc(url, layerID, condition, isClearMap, typeShow, fn){
           pointGraphic1
         ]);
         
+      } else  if(feature.geometry.type == "polyline"){
+
+        // First create a line geometry (this is the Keystone pipeline)
+        var polyline = {
+          type: "polyline", // autocasts as new Polyline()
+          paths: feature.geometry.paths,
+          spatialReference: {
+            wkid: wkid
+          },
+        };
+
+        // Create a symbol for drawing the line
+        const lineSymbol = {
+          type: "simple-line", // autocasts as SimpleLineSymbol()
+          color: [220,20,60],
+          width: 4,
+          style: "dash"
+        };
+
+        //Create a new graphic and add the geometry,
+        const polylineGraphic1 = new publicGraphic({
+          geometry: polyline,
+          symbol: lineSymbol,
+        });
+
+        // Add the graphics to the view's graphics layer
+        mapView.graphics.addMany([
+          polylineGraphic1
+        ]);
+
+      } else  if(feature.geometry.type == "polygon"){
+        // Create a polygon geometry
+        var polygon = {
+          type: "polygon", // autocasts as new Polygon()
+          rings: feature.geometry.rings,
+          spatialReference: {
+            wkid: wkid
+          },
+        };
+
+        // Create a symbol for rendering the graphic
+        var fillSymbol = {
+          type: "simple-fill", // autocasts as new SimpleFillSymbol()
+          color: [227, 139, 79, 0.8],
+          outline: {
+            // autocasts as new SimpleLineSymbol()
+            color: [255, 255, 255],
+            width: 1
+          }
+        };
+
+        // Add the geometry and symbol to a new graphic
+        var polygonGraphic1 = new publicGraphic({
+          geometry: polygon,
+          symbol: fillSymbol
+        });
+
+        // Add the graphics to the view's graphics layer
+        mapView.graphics.addMany([
+          polygonGraphic1
+        ]);
       }
       
-
       //feature.popupTemplate = popupTemplate;
       return feature;
     });
