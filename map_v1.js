@@ -26,6 +26,7 @@ let publicquery;
 let publicGraphicsLayer;
 
 
+
 function loadMap(url, divMap, urlSearch, fn){
     require(["esri/config", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer",
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
@@ -276,6 +277,7 @@ function showOnMap(url, layerID, condition, isClearMap, fn){
 
     //publicParams.where = field + " like N'%"+ value +"%'";
     publicParams.where = condition;
+    publicFn = fn;
 
     // executes the query and calls getResults() once the promise is resolved
     // promiseRejected() is called if the promise is rejected
@@ -440,9 +442,7 @@ function showOnMap(url, layerID, condition, isClearMap, fn){
         }
       });
 
-    // print the number of results returned to the user
-    //document.getElementById("printResults").innerHTML =
-      //peakResults.length + " results found!";
+      publicFn();
   }
 
   // Called each time the promise is rejected
