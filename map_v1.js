@@ -271,6 +271,8 @@ function geoLocation(){
 
 function showOnMap(url, layerID, condition, isClearMap, fn){
     
+  if(isClearMap == true)
+    clearMap();
 
     //publicParams.where = field + " like N'%"+ value +"%'";
     publicParams.where = condition;
@@ -297,7 +299,7 @@ function showOnMap(url, layerID, condition, isClearMap, fn){
     //     }
     // };
 
-    let textSymbol = {
+    var textSymbol = {
       type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
       style: "square",
       color: "blue",
@@ -308,11 +310,11 @@ function showOnMap(url, layerID, condition, isClearMap, fn){
       }
     };
 
-    const resultsLayer = new publicGraphicsLayer();
+    var resultsLayer = new publicGraphicsLayer();
 
     // Loop through each of the results and assign a symbol and PopupTemplate
     // to each so they may be visualized on the map
-    const peakResults = response.features.map(function (feature) {
+    var peakResults = response.features.map(function (feature) {
 
       // // Sets the symbol of each resulting feature to a cone with a
       // // fixed color and width. The height is based on the mountain's elevation
@@ -365,7 +367,7 @@ function showOnMap(url, layerID, condition, isClearMap, fn){
         };
 
         // Create a symbol for drawing the line
-        const lineSymbol = {
+        var lineSymbol = {
           type: "simple-line", // autocasts as SimpleLineSymbol()
           color: [220,20,60],
           width: 4,
@@ -373,7 +375,7 @@ function showOnMap(url, layerID, condition, isClearMap, fn){
         };
 
         //Create a new graphic and add the geometry,
-        const polylineGraphic1 = new publicGraphic({
+        var polylineGraphic1 = new publicGraphic({
           geometry: polyline,
           symbol: lineSymbol,
         });
