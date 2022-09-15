@@ -68,15 +68,20 @@
             //})
 
              var urlShowOnMap =  "http://gisfava.isfahan.ir/arcgis80/rest/services/annoatation/annotation/MapServer";
-             showOnMap(urlShowOnMap, 2, "zone_ = 'M11'", null, function(e){
+             showOnMap(urlShowOnMap, 2, "zone_ like '%4%'", null, function(e){
 
 
              })
 
-             //urlShowOnMap =  "http://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap/MapServer";
-             //   showOnMap(urlShowOnMap, 11, "title = 'پل ابوذر'", null, function(e){
-             //      //var ss = e;
-             //})
+            urlShowOnMap =  "http://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer";
+            //    showOnMap(urlShowOnMap, 11, "title = 'پل ابوذر'", null, function(e){
+            //        //var ss = e;
+            //  })
+
+
+             getAllSubLayers(urlShowOnMap, function(e){
+                 var a = e;
+             });
 
 
         });

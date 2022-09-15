@@ -8,6 +8,7 @@ let paramsIden;
 let publicIdentify;
 let publicUrlSearch;
 let publicFn;
+let publicFn1;
 let publicPoint;
 let publicGraphic;
 let publicSpatialReference;
@@ -24,7 +25,11 @@ let publicFindParameters;
 let publicParams;
 let publicquery;
 let publicGraphicsLayer;
-
+let publicWMSLayer;
+let publicMapImageLayer;
+let arrServices = [];
+let publicI = 0;
+let parentId = 0;
 
 
 function loadMap(url, divMap, urlSearch, fn){
@@ -32,9 +37,9 @@ function loadMap(url, divMap, urlSearch, fn){
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
             "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer", "esri/config",
             "esri/widgets/Locate", "esri/rest/find", "esri/rest/support/FindParameters", "esri/rest/query", "esri/rest/support/Query",
-            "esri/layers/GraphicsLayer"],
+            "esri/layers/GraphicsLayer", "esri/layers/WMSLayer"],
         function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic,
-                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate, find, FindParameters, query, Query, GraphicsLayer) {
+                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate, find, FindParameters, query, Query, GraphicsLayer, WMSLayer) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
@@ -53,6 +58,8 @@ function loadMap(url, divMap, urlSearch, fn){
             });
             publicquery = query;
             publicGraphicsLayer = GraphicsLayer;
+            publicWMSLayer = WMSLayer;
+            publicMapImageLayer = MapImageLayer;
 
 	    
             esriConfig.apiKey = apiKey;
@@ -449,3 +456,97 @@ function showOnMap(url, layerID, condition, isClearMap, fn){
   function promiseRejected(error) {
     console.error("Promise rejected: ", error.message);
   }
+
+
+function getAllSubLayers(url, fn){
+  layer = new publicMapImageLayer({
+    url: url
+  });
+ 
+  publicFn1 = fn;
+  publicI = 0;
+  map.add(layer);
+  layer.when(buildToc);
+
+}
+
+
+function buildToc(){
+  map.remove(layer);
+  populateLayerRecursive(layer);
+
+  publicFn1(arrServices);
+}
+
+function populateLayerRecursive(thislayer)
+{
+    // arrServices
+
+    // let chk = document.createElement("input");
+    // chk.type = "checkbox";
+    // chk.value = thislayer.id;
+    // chk.checked = thislayer.visible;
+    // chk.addEventListener("click", e => thislayer.visible=e.target.checked )
+    
+    // let lbl = document.createElement("label");
+    // lbl.textContent = thislayer.title + "       "
+
+    // let btn = document.createElement("button");
+    // btn.textContent = "View";
+    // //getCount(thislayer.id, btn);
+    // //on click, open the attribute table
+    // btn.layerid = thislayer.id;
+    // btn.layerUrl = thislayer.url;
+    // btn.mapview = this.mapview;
+    // btn.addEventListener("click", this.openAttributesTable);
+
+    // let layeritem = document.createElement("li");
+    // layeritem.appendChild(chk);
+    // layeritem.appendChild(lbl);
+    // layeritem.appendChild(btn);
+
+    // layerlist.appendChild(layeritem);
+
+    arrServices[publicI] = [];
+    arrServices[publicI][0] = publicI + 1;
+    if(publicI == 0)
+      arrServices[publicI][1] = null;
+    //else
+    //  arrServices[publicI][1] = arrServices[publicI - 1][0];
+    arrServices[publicI][2] = thislayer.title;
+    arrServices[publicI][3] = thislayer.url;
+
+    
+    if (thislayer.sublayers != null && thislayer.sublayers.items.length > 0)
+    {
+        // let newlist = document.createElement("ul");
+        // layerlist.appendChild(newlist);
+
+        //if(publicI != 0)
+        if(publicI != 0)
+          arrServices[publicI][1] = parentId;
+          
+        parentId = arrServices[publicI][0];
+
+        publicI += 1;
+
+        if(publicI == 18)
+          var aa =0;
+
+        for (let i = 0; i < thislayer.sublayers.length; i++)
+        {
+            this.populateLayerRecursive(thislayer.sublayers.items[thislayer.sublayers.length - i - 1]);
+        }
+
+    }
+    else{
+      arrServices[publicI][1] = parentId;
+      publicI += 1;
+
+      if(publicI == 18)
+       var aa =0;
+    }
+    //let sublayer = thislayer.sublayers.items[i];
+    
+
+}
