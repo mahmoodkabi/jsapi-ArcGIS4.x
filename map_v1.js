@@ -30,6 +30,7 @@ let publicMapImageLayer;
 let arrServices = [];
 let publicI = 0;
 let parentId = 0;
+let publicRequest;
 
 
 function loadMap(url, divMap, urlSearch, fn){
@@ -37,9 +38,10 @@ function loadMap(url, divMap, urlSearch, fn){
             "esri/widgets/Measurement", "esri/rest/identify", "esri/rest/support/IdentifyParameters", "esri/geometry/Point",
             "esri/Graphic", "esri/geometry/SpatialReference", "esri/layers/OpenStreetMapLayer", "esri/config",
             "esri/widgets/Locate", "esri/rest/find", "esri/rest/support/FindParameters", "esri/rest/query", "esri/rest/support/Query",
-            "esri/layers/GraphicsLayer", "esri/layers/WMSLayer"],
+            "esri/layers/GraphicsLayer", "esri/layers/WMSLayer", "esri/request"],
         function (config, Map, MapView, FeatureLayer, MapImageLayer, Measurement, identify, IdentifyParameters, Point, Graphic,
-                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate, find, FindParameters, query, Query, GraphicsLayer, WMSLayer) {
+                  SpatialReference, OpenStreetMapLayer, esriConfig, Locate, find, FindParameters, query, Query, GraphicsLayer, WMSLayer,
+                  Request) {
 
             publicDivMap = divMap;
             publicUrlSearch = urlSearch;
@@ -60,6 +62,7 @@ function loadMap(url, divMap, urlSearch, fn){
             publicGraphicsLayer = GraphicsLayer;
             publicWMSLayer = WMSLayer;
             publicMapImageLayer = MapImageLayer;
+            publicRequest = Request;
 
 	    
             esriConfig.apiKey = apiKey;
@@ -547,6 +550,49 @@ function populateLayerRecursive(thislayer)
        var aa =0;
     }
     //let sublayer = thislayer.sublayers.items[i];
-    
+}
 
+
+
+
+//populate the attribute of a given layer
+function populateAttributesTable(url, fn)
+{
+	//alert (featureCount);
+	let queryurl = url + "/query";
+
+	let arrAttribute = [];
+
+	let extent = undefined;
+
+	if (mapView.useExtent) extent = JSON.stringify(mapView.extent);
+
+	let queryOptions = {
+     					responseType: "json",
+     					query:  
+     					{
+							f: "json",
+							where:"1=1",
+							geometry: extent,
+							//inSR: JSON.stringify(mapView.extent.spatialReference),
+							geometryType: "esriGeometryEnvelope",
+							spatialRel: "esriSpatialRelEnvelopeIntersects",
+							returnCountOnly: false,
+							outFields: "*",
+							resultOffset: 1,
+							resultRecordCount: 1
+     					}
+            }
+
+       publicRequest(queryurl,queryOptions).then (response => 
+	     {
+          for (let i = 0; i < response.data.fields.length; i++)
+          {
+            arrAttribute.push(response.data.fields[i].alias);
+          }
+
+          fn(arrAttribute);
+	     }, response => true );
+
+       
 }
