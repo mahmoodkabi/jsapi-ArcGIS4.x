@@ -37,26 +37,30 @@
         //var url = "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap/MapServer";
         //var url = "osm, http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap1/MapServer, http://gisfava.isfahan.ir/arcgis80/rest/services/BUS/Bus_AVL/MapServer";
         //var url = " http://gisfava.isfahan.ir/arcgis80/rest/services/BUS/Bus_AVL/MapServer";
-        //var url = "http://gisfava.isfahan.ir/arcgis80/rest/services/annoatation/annotation/MapServer";
-        var url = "";
-        var urlSearch = "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap1/MapServer";
+        var url = "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap1/MapServer";
+        //var url = "";
+        //var urlSearch = "http://gisfava.isfahan.ir:6080/arcgis/rest/services/BaseMap/GISBaseMap1/MapServer";
+        var urlSearch = "http://gisfava.isfahan.ir/arcgis80/rest/services/BUS/Bus_AVL/MapServer";
 
-        loadMap(url, "divMap", urlSearch, function(){
+        loadMap(urlSearch, "divMap", urlSearch, function(){
             
             mapClick(function(e){
                 //alert(e);
+
+                getInfoClick(function(res){
+                    res.forEach(element => {
+                        console.log(element.layerName);
+
+                        showOnMap(urlSearch, element.layerId, "objectId=" + element.feature.attributes.OBJECTID, null, function(e){
+                        });
+                    });
+                });
             });
 
             measurementTools();
 
-            getInfoClick(function(e){
-                e.forEach(element => {
-                    //alert(element.layerName);
-                });
-            });
-
             //تغییر نقشه پایه
-            changeBaseMap("osm");
+           changeBaseMap("osm");
 
             //موقعیت جاری
             geoLocation();
@@ -71,21 +75,23 @@
              showOnMap(urlShowOnMap, 2, "zone_ like '%4%'", null, function(e){
 
 
-             })
+             });
 
-            urlShowOnMap =  "http://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer";
+            // urlShowOnMap =  "http://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer";
             //    showOnMap(urlShowOnMap, 11, "title = 'پل ابوذر'", null, function(e){
             //        //var ss = e;
             //  })
 
 
-             getAllSubLayers(urlShowOnMap, function(e){
-                 var a = e;
 
-                 populateAttributesTable(e[5][3], function(fields){
-                    var ss = fields;
-                 })
-             });
+
+            //  getAllSubLayers(urlShowOnMap, function(e){
+            //      var a = e;
+
+            //      populateAttributesTable(e[1][3], function(res){
+            //         var fields = res;
+            //      })
+            //  });
 
 
         });

@@ -82,8 +82,22 @@ function loadMap(url, divMap, urlSearch, fn){
                         layerbaseMapID = entry.toUpperCase().split('/');
                         layer = new MapImageLayer({
                             url : entry,
-                            id: layerbaseMapID[layerbaseMapID.indexOf("MAPSERVER") - 1]
-                        });
+                            id: layerbaseMapID[layerbaseMapID.indexOf("MAPSERVER") - 1],
+                            // sublayers: [{
+                            //   id: 10,
+                            //   popupTemplate: {
+                            //     title: "qweqwe",
+                            //     content: "{NAM_MADI}"
+                            //   }
+                            // },
+                            //  {
+                            //   id: 15,
+                            //   popupTemplate: {
+                            //     title: "adsas",
+                            //     content: "{layer}"
+                            //   }
+                            // }]
+                         });
 
                         map.add(layer);
                     }
@@ -256,15 +270,7 @@ function clearMap() {
 }
 
 function changeBaseMap(nameBaseMap){
-    //publicEsriConfig.apiKey = apiKey;
     map.basemap = nameBaseMap;
-    //map.basemap = "osm"
-    //map.basemap = "osm-standard",
-
-    //map.removeAll();
-    //const osmLayer = new publicOpenStreetMapLayer();
-    //map.add(osmLayer);
-    //map.allLayers.items[0].spatialReference.wkid = wkid;
 }
 
 function geoLocation(){
@@ -299,18 +305,6 @@ function showOnMap(url, layerID, condition, isClearMap, fn){
 
  // Called each time the promise is resolved
  function getResults(response) {
-    //   // Create a symbol for drawing the point
-    //   const textSymbol = {
-    //     type: "text", // autocasts as new TextSymbol()
-    //     color: "#7A003C",
-    //     text: "\ue61d", // esri-icon-map-pin
-    //     font: {
-    //       // autocasts as new Font()
-    //       size: 36,
-    //       family: "CalciteWebCoreIcons"
-    //     }
-    // };
-
     var textSymbol = {
       type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
       style: "square",
@@ -470,7 +464,6 @@ function getAllSubLayers(url, fn){
   publicI = 0;
   map.add(layer);
   layer.when(buildToc);
-
 }
 
 
@@ -481,35 +474,7 @@ function buildToc(){
   publicFn1(arrServices);
 }
 
-function populateLayerRecursive(thislayer)
-{
-    // arrServices
-
-    // let chk = document.createElement("input");
-    // chk.type = "checkbox";
-    // chk.value = thislayer.id;
-    // chk.checked = thislayer.visible;
-    // chk.addEventListener("click", e => thislayer.visible=e.target.checked )
-    
-    // let lbl = document.createElement("label");
-    // lbl.textContent = thislayer.title + "       "
-
-    // let btn = document.createElement("button");
-    // btn.textContent = "View";
-    // //getCount(thislayer.id, btn);
-    // //on click, open the attribute table
-    // btn.layerid = thislayer.id;
-    // btn.layerUrl = thislayer.url;
-    // btn.mapview = this.mapview;
-    // btn.addEventListener("click", this.openAttributesTable);
-
-    // let layeritem = document.createElement("li");
-    // layeritem.appendChild(chk);
-    // layeritem.appendChild(lbl);
-    // layeritem.appendChild(btn);
-
-    // layerlist.appendChild(layeritem);
-
+function populateLayerRecursive(thislayer){
     arrServices[publicI] = [];
     arrServices[publicI][0] = publicI + 1;
     if(publicI == 0)
@@ -593,6 +558,8 @@ function populateAttributesTable(url, fn)
 
           fn(arrAttribute);
 	     }, response => true );
+}
 
-       
+function aa(){
+  
 }
