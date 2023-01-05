@@ -1,3 +1,6 @@
+# jsapi-ArcGIS4.x
+The js file helps developers use prepared function to show and manipulate the map.
+
 # How to use this repo?
 * Create a *.html page
 * add map_v1.js refrence to your *.html page
