@@ -9,7 +9,7 @@ The js file helps developers use prepared function to show and manipulate the ma
   * <script src="https://js.arcgis.com/4.24/"></script>
   * <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 * Use the javascript function written in map_v1.js
-* You can find the usage method in the Sample1.html file.
+* You can find the usage method in the **Sample1.html** file.
 
 # The names of function in map_v1.js are
 * **loadMap** function loading wms service.
