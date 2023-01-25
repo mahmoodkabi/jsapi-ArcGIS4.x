@@ -14,7 +14,7 @@ let publicGraphic;
 let publicSpatialReference;
 let wkid = 32639;
 let publicOpenStreetMapLayer;
-let defaultX = 51.65;
+let defaultX = 51.651;
 let defaultY = 32.64;
 let defaultZoom = 12;
 let publicEsriConfig; 
