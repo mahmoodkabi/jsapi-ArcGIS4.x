@@ -560,6 +560,3 @@ function populateAttributesTable(url, fn)
 	     }, response => true );
 }
 
-function aa(){
-  
-}
