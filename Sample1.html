@@ -59,24 +59,27 @@
 
             measurementTools();
 
-            //تغییر نقشه پایه
+            // Change the bassemap    
            changeBaseMap("osm");
 
-            //موقعیت جاری
+            // get current location
             geoLocation();
 
 
+            // Identify and show polygon, polyline, and point on the map
             //var urlShowOnMap = "http://gisfava.isfahan.ir/arcgis80/rest/services/BUS/Bus_AVL/MapServer";
             //showOnMap(urlShowOnMap, 0, "name like N'%انقلاب%'", null, function(e){
             //    var ss = e;
             //})
 
+             // Identify and show polygon, polyline, and point on the map
              var urlShowOnMap =  "http://gisfava.isfahan.ir/arcgis80/rest/services/annoatation/annotation/MapServer";
              showOnMap(urlShowOnMap, 2, "zone_ like '%4%'", null, function(e){
 
 
              });
 
+            // Identify and show polygon, polyline, and point on the map
             // urlShowOnMap =  "http://gisfava.isfahan.ir/arcgis80/rest/services/BaseMap/GISBaseMap1/MapServer";
             //    showOnMap(urlShowOnMap, 11, "title = 'پل ابوذر'", null, function(e){
             //        //var ss = e;
@@ -84,10 +87,11 @@
 
 
 
-
+            // Get all layers
             //  getAllSubLayers(urlShowOnMap, function(e){
             //      var a = e;
 
+                    // Get all attributes of current layer.
             //      populateAttributesTable(e[1][3], function(res){
             //         var fields = res;
             //      })
